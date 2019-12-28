@@ -25,7 +25,7 @@ int led_rgb[] = {0, 0, 0}; // Start with LEDs off
 float j, f, k; // used for LED patterns
 int sensorState = 0; // initial state of line following sensor
 int previousState = 1; // previous state of line sensor
-int d = 12; // holds distance, default value of 12 means we start with LEDs on
+int d = 24; // holds distance, default value of 12 means we start with LEDs on
 
 
 // Sensors
@@ -71,6 +71,7 @@ void setup()
   //  Encoder_2.setSpeedPid(0.18,0,0);
 
   buzzer.setpin(45); // Buzzer is pin 45 on mBot Ranger
+  startup_beep();
   startup_colors(); // play RBG LED pattern after all setup done OK
   // Set all LEDs off
   led_light(12); // Light up all LEDs
@@ -109,7 +110,7 @@ void loop()
     time_3 = millis();
     print_time(time_3);
     Serial.println("Running Process 3!");
-    d = get_distance(); // issue where reading distance sensor slows down program
+//    d = get_distance(); // issue where reading distance sensor slows down program
 //    Serial.print("Distance Value is: ");
 //    Serial.println(d);
   }
@@ -130,25 +131,25 @@ void follow_line(int sensorState) // move robot
     case S1_IN_S2_IN:
       //      Serial.println("Sensor 1 and 2 are inside of black line - moving FORWARD"); // move forward
       led_green();
-      Encoder_1.setMotorPwm(-180);
-      Encoder_2.setMotorPwm(180);
+      Encoder_1.setMotorPwm(-140);
+      Encoder_2.setMotorPwm(140);
       break;
     case S1_IN_S2_OUT:
       //      Serial.println("Sensor 2 is outside of black line - moving LEFT"); // move left
       led_blue();
-      Encoder_1.setMotorPwm(-180);
-      Encoder_2.setMotorPwm(-160);
+      Encoder_1.setMotorPwm(-140);
+      Encoder_2.setMotorPwm(-120);
       break;
     case S1_OUT_S2_IN:
       //      Serial.println("Sensor 1 is outside of black line - moving RIGHT"); // move right
       led_yellow();
-      Encoder_1.setMotorPwm(160);
-      Encoder_2.setMotorPwm(180);
+      Encoder_1.setMotorPwm(120);
+      Encoder_2.setMotorPwm(140);
       break;
     case S1_OUT_S2_OUT:
-      //      Serial.println("Sensor 1 and 2 are outside of black line - STOPPING"); // We're lost
-      Encoder_1.setMotorPwm(0);
-      Encoder_2.setMotorPwm(0);
+      //      Serial.println("Sensor 1 and 2 are outside of black line - REVERSING/STOPPING?"); // We're lost
+      Encoder_1.setMotorPwm(100);
+      Encoder_2.setMotorPwm(-100);
       led_red(); led_light(12);
       error_beep();
       break;
@@ -189,8 +190,8 @@ int get_distance()
 void led_light(int LEDCOUNT) // Light up specified number of LEDs on the ring
 {
   int i;
-    Serial.print("LEDs to light up: ");
-    Serial.println(LEDCOUNT);
+//    Serial.print("LEDs to light up: ");
+//    Serial.println(LEDCOUNT);
 
   // Set all LEDs off
   led_ring.setColor( RINGALLLEDS, 0, 0, 0 );
@@ -235,6 +236,14 @@ void led_light(int LEDCOUNT) // Light up specified number of LEDs on the ring
 //
 //  Serial.println("FINISHED encoder 2 ISR");
 //}
+
+
+void startup_beep()
+{
+  buzzer.tone(800, 100);
+  buzzer.tone(1000, 100);
+  buzzer.tone(1200, 100);
+}
 
 void error_beep()
 {
